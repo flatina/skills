@@ -28,9 +28,12 @@ Outside flmux, you may need `--session` when the session cannot be resolved auto
 
 1. `--pane <paneId>`
 2. `FLMUX_BROWSER`
-3. error
+3. Active browser pane (if the currently focused pane is a browser)
+4. Most recently activated browser pane (lowest age)
+5. Only browser pane (if exactly one exists)
+6. Error (multiple panes, none active)
 
-There is no hidden last-active fallback.
+Inside a flmux terminal, you often don't need `FLMUX_BROWSER` at all — if you just opened a browser pane, it's the most recent and will be selected automatically.
 
 ## Useful Patterns
 

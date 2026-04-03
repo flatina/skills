@@ -3,6 +3,7 @@
 ## Setup
 
 ```powershell
+flmux summary --json          # discover webServerUrl, existing panes
 $env:FLMUX_BROWSER = (flmux browser new https://example.com)
 flmux browser connect
 ```
@@ -13,7 +14,7 @@ flmux browser connect
 flmux browser new https://example.com
 flmux browser list
 flmux browser connect --json
-flmux browser focus
+flmux browser focus                       # activate the pane's tab
 flmux browser close
 ```
 
@@ -38,6 +39,9 @@ flweb wait --fn "document.readyState === 'complete'"
 ```powershell
 flweb click @e1
 flweb fill @e3 "hello"
+flweb fill "label=Email" "user@example.com"
+flweb click "text=Focus Name"
+flweb get text "role=button[name='Reveal Result']"
 flweb press Enter
 ```
 
@@ -50,6 +54,7 @@ flweb get text @e1
 flweb get html #result
 flweb get value @e3
 flweb get attr @e4 placeholder
+flweb get box @e3                         # bounding rect (visibility/position check)
 flweb eval "document.title"
 ```
 
@@ -64,9 +69,18 @@ flweb wait load
 flweb snapshot --compact
 ```
 
+## New Tab Detection
+
+```powershell
+flweb click --json @e1        # newPanes in JSON output if a new tab opened
+flweb eval --json "window.open('https://example.com')"
+flmux browser list            # AGE, OPENER columns
+```
+
 ## Practical Rules
 
 - Use `flmux browser ...` for pane management.
 - Use `flweb ...` for page automation.
 - Re-run `flweb snapshot` after page changes before reusing refs.
 - Use `--json` when structured output is easier to consume.
+- Supported target forms: `@e1`, CSS selectors, `text=...`, `label=...`, `role=...`.
