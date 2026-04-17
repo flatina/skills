@@ -39,6 +39,7 @@ Notes:
 - `-RestoreIfMinimized`: restore a minimized target before capture; otherwise minimized targets fail with code `12`.
 - `-Activate`: attempt to bring the target window to the foreground before capture.
 - `-NoFallback`: fail instead of using screen-copy fallback.
+- `-ScreenCopyOnly`: skip `PrintWindow` and capture via screen copy. Use for GPU-composited content (Chromium browsers, WebGL, hardware-accelerated video) that `PrintWindow` renders as black. Requires the window to be visible and unoccluded — combine with `-Activate`. Mutually exclusive with `-NoFallback`.
 - Default capture tries `PrintWindow` first and may fall back to screen copy.
 
 ## Output contract
@@ -63,4 +64,5 @@ flcap -Out "$env:TEMP\notepad.png" -ProcessName notepad -TitleContains "Untitled
 flcap -Out "$env:TEMP\editor.png" -ProcessName 'code*' -TitleContains "main.py" -Json
 flcap -Out "$env:TEMP\app.png" -Pid 4242 -RestoreIfMinimized -Activate -Json
 flcap -Out "$env:TEMP\client.png" -Hwnd 0x00123456 -ClientOnly -NoFallback -Json
+flcap -Out "$env:TEMP\edge.png" -ProcessName msedge -TitleContains "My page" -Activate -ScreenCopyOnly -Json
 ```

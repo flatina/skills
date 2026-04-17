@@ -17,6 +17,7 @@ param(
     [switch]$RestoreIfMinimized,
     [switch]$ClientOnly,
     [switch]$NoFallback,
+    [switch]$ScreenCopyOnly,
     [switch]$Json
 )
 
@@ -799,6 +800,10 @@ try {
         Fail-With -Code $script:ExitCodes.InvalidArguments -Message 'one of Hwnd, Pid, ProcessName, or TitleContains is required'
     }
 
+    if ([bool]$ScreenCopyOnly -and [bool]$NoFallback) {
+        Fail-With -Code $script:ExitCodes.InvalidArguments -Message 'ScreenCopyOnly cannot be combined with NoFallback'
+    }
+
     $resolvedHwnd = 0L
     if ($hasHwnd) {
         $resolvedHwnd = Parse-Int64Argument -Name 'Hwnd' -Value $Hwnd
@@ -886,35 +891,52 @@ try {
 
     $bitmap = $null
     $method = $null
-    $printWindowResult = Invoke-PrintWindowCapture -ResolvedHwnd ([int64]$window.Hwnd) -Bounds $bounds -UseClientOnly ([bool]$ClientOnly)
 
-    if ($printWindowResult.Ok) {
-        $bitmap = $printWindowResult.Bitmap
-        $method = 'PrintWindow'
-    }
-    else {
-        if ([bool]$NoFallback) {
-            Fail-With -Code $script:ExitCodes.PrintWindowNoFallback -Message 'PrintWindow failed and fallback disabled' -Details ([ordered]@{
-                hwnd              = [int64]$window.Hwnd
-                pid               = [int]$window.Pid
-                title             = [string]$window.Title
-                printWindowReason = [string]$printWindowResult.Message
-            })
-        }
-
+    if ([bool]$ScreenCopyOnly) {
         $screenCopyResult = Invoke-ScreenCopyCapture -Bounds $bounds
         if (-not $screenCopyResult.Ok) {
-            Fail-With -Code $script:ExitCodes.PrintWindowAndFallbackFailed -Message 'PrintWindow failed and fallback failed' -Details ([ordered]@{
-                hwnd              = [int64]$window.Hwnd
-                pid               = [int]$window.Pid
-                title             = [string]$window.Title
-                printWindowReason = [string]$printWindowResult.Message
-                fallbackReason    = [string]$screenCopyResult.Message
+            Fail-With -Code $script:ExitCodes.PrintWindowAndFallbackFailed -Message 'screen-copy capture failed' -Details ([ordered]@{
+                hwnd           = [int64]$window.Hwnd
+                pid            = [int]$window.Pid
+                title          = [string]$window.Title
+                fallbackReason = [string]$screenCopyResult.Message
             })
         }
 
         $bitmap = $screenCopyResult.Bitmap
         $method = 'ScreenCopy'
+    }
+    else {
+        $printWindowResult = Invoke-PrintWindowCapture -ResolvedHwnd ([int64]$window.Hwnd) -Bounds $bounds -UseClientOnly ([bool]$ClientOnly)
+
+        if ($printWindowResult.Ok) {
+            $bitmap = $printWindowResult.Bitmap
+            $method = 'PrintWindow'
+        }
+        else {
+            if ([bool]$NoFallback) {
+                Fail-With -Code $script:ExitCodes.PrintWindowNoFallback -Message 'PrintWindow failed and fallback disabled' -Details ([ordered]@{
+                    hwnd              = [int64]$window.Hwnd
+                    pid               = [int]$window.Pid
+                    title             = [string]$window.Title
+                    printWindowReason = [string]$printWindowResult.Message
+                })
+            }
+
+            $screenCopyResult = Invoke-ScreenCopyCapture -Bounds $bounds
+            if (-not $screenCopyResult.Ok) {
+                Fail-With -Code $script:ExitCodes.PrintWindowAndFallbackFailed -Message 'PrintWindow failed and fallback failed' -Details ([ordered]@{
+                    hwnd              = [int64]$window.Hwnd
+                    pid               = [int]$window.Pid
+                    title             = [string]$window.Title
+                    printWindowReason = [string]$printWindowResult.Message
+                    fallbackReason    = [string]$screenCopyResult.Message
+                })
+            }
+
+            $bitmap = $screenCopyResult.Bitmap
+            $method = 'ScreenCopy'
+        }
     }
 
     try {
