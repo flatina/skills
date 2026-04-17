@@ -1,5 +1,7 @@
 # Generate
 
+First, remove any existing `.tmp/quickening-*.md` files from prior runs.
+
 Write questions that verify understanding of this project — from overall concept and architecture down to current work state. Each question should ask about one thing only — don't mix past, present, and next steps in a single question.
 
 Save to `.tmp/quickening-quiz.md`:
