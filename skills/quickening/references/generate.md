@@ -5,6 +5,7 @@ First, remove any existing `.tmp/quickening-*.md` files from prior runs.
 Write questions that verify understanding of this project — from overall concept and architecture down to current work state. Each question should ask about one thing only — don't mix past, present, and next steps in a single question.
 
 Save to `.tmp/quickening-quiz.md`:
+- A one-line header identifying this as a quiz from the prior session to the next session
 - Brief context not already captured in project docs — only what the next session needs
 - References the next session should read
 - 2-3 broad questions first (e.g. project purpose, concept, key docs)
