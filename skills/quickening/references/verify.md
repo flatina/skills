@@ -1,5 +1,15 @@
 # Verify
 
-`.tmp/quickening-answers.md` contains another session's answers to the quiz in `.tmp/quickening-quiz.md`. Verify from what you already know — do not investigate the codebase. Keep responses brief. Flag any gaps or misunderstandings. Also address any open questions the answering session appended. Finally, add a brief notes section for caveats, warnings, or references the new session should know but weren't covered by the quiz — skip if nothing noteworthy.
+`.tmp/quickening-answers.md` contains another session's answers to the quiz in `.tmp/quickening-quiz.md`. Verify mostly from what you already know — full re-investigation rarely adds value here. Keep responses brief.
+
+A light spot-check is worth doing when an answer cites a specific file:line that may have shifted since you wrote the quiz (rename, moved function, line drift from intervening edits).
+
+Focus effort where it matters, in order:
+1. Did answers respect the Settled decisions? Flag any that contradict one (legit challenges belong in open questions, not answers).
+2. Did the new session engage the adversarial question with a concrete alternative and real trade-off? If the response is vague or just restates the current plan, push back — the point of the question is to surface blind spots, not to collect agreement.
+3. Answer any open questions the new session appended.
+4. Add a brief notes section for caveats, references, or lessons learned (e.g. context-saving tricks) not covered by the quiz — skip if nothing noteworthy.
+
+Broad/subsystem answers tend to converge on "correct" because they're derived from the same sources you used — they're low-leverage to review. Your attention is better spent on Settled decisions and the adversarial question.
 
 Begin the feedback with a one-line header identifying it as from the prior session. Save results to `.tmp/quickening-feedback.md`.
