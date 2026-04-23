@@ -4,7 +4,7 @@ The quiz was written by a prior session; you are the "next session" it addresses
 
 Read `.tmp/quickening-quiz.md`. Walk the listed references next — for large code files, scope first (greps, function list, scope hints from the quiz) and read only the relevant parts. Then investigate the codebase to answer each question. Don't guess.
 
-Per question, expect to read several files and run targeted greps — go deeper when uncertain. Undershooting hurts more than overshooting; a vague or shallow answer forces the next session to redo the work, while a few extra reads are cheap. Output: 1-3 sentences per answer, with file:line citations for specific claims.
+Per question, investigate thoroughly — read several files, targeted greps, deeper when uncertain. Write concisely: 1-3 sentences with file:line citations. Depth belongs in the investigation, not the prose — shallow investigation forces rework; verbose prose is just noise.
 
 Save answers to `.tmp/quickening-answers.md`. After answering, append any open questions that came up during investigation.
 
