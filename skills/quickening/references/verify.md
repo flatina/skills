@@ -1,6 +1,6 @@
 # Verify
 
-`.tmp/quickening-answers.md` contains another session's answers to the quiz in `.tmp/quickening-quiz.md`. Verify mostly from what you already know — full re-investigation rarely adds value here. Keep responses brief.
+`.tmp/msg-2-heir-answer.md` contains another session's answers to the quiz in `.tmp/msg-1-sire-quiz.md`. Verify mostly from what you already know — full re-investigation rarely adds value here. Keep responses brief.
 
 A light spot-check is worth doing when an answer cites a specific file:line that may have shifted since you wrote the quiz (rename, moved function, line drift from intervening edits).
 
@@ -13,4 +13,4 @@ Focus effort where it matters, in order:
 
 Broad/subsystem answers tend to converge on "correct" because they're derived from the same sources you used — they're low-leverage to review. Your attention is better spent on Settled decisions and the adversarial question.
 
-Begin the feedback with a one-line header identifying it as from the prior session. Save results to `.tmp/quickening-feedback.md`.
+Save results to `.tmp/msg-3-sire-feedback.md`.
