@@ -29,16 +29,16 @@ claude -p --dangerously-skip-permissions "Review src/auth/ for bugs and risks" >
 
 ### Codex CLI
 
-Use `-o/--output-last-message` to have codex write the final message to a file directly. Discard stdout (execution logs only):
+Use `-o/--output-last-message` to have codex write the final message to a file directly. Discard stdout (execution logs only). Add `--ephemeral` so the one-shot run doesn't leave session files on disk:
 
 ```bash
-codex exec --yolo -o .tmp/<output>.md "Review src/auth/ for bugs and risks" 2>/dev/null >/dev/null
+codex exec --yolo --ephemeral -o .tmp/<output>.md "Review src/auth/ for bugs and risks" 2>/dev/null >/dev/null
 ```
 
 For longer prompts, pipe via stdin:
 
 ```bash
-cat <<'PROMPT' | codex exec --yolo -o .tmp/<output>.md 2>/dev/null >/dev/null
+cat <<'PROMPT' | codex exec --yolo --ephemeral -o .tmp/<output>.md 2>/dev/null >/dev/null
 <prompt body here>
 PROMPT
 ```
@@ -46,7 +46,7 @@ PROMPT
 For code review against git state, prefer the built-in subcommand — it handles diff scoping for you:
 
 ```bash
-codex exec review --uncommitted -o .tmp/<output>.md 2>/dev/null >/dev/null
+codex exec --ephemeral review --uncommitted -o .tmp/<output>.md 2>/dev/null >/dev/null
 # or: --base main, --commit <sha>
 ```
 
