@@ -1,4 +1,4 @@
-# Attempt
+# Answer
 
 The quiz was written by a prior session; you are the "next session" it addresses.
 
@@ -6,7 +6,7 @@ Read `.tmp/quickening-1-elder-quiz.md`. Walk the listed references next — for 
 
 Per question, investigate thoroughly — read several files, targeted greps, deeper when uncertain. Write concisely: 1-3 sentences with file:line citations. Depth belongs in the investigation, not the prose — shallow investigation forces rework; verbose prose is just noise.
 
-Save answers to `.tmp/quickening-2-scion-attempt.md`. After answering, append any open questions that came up during investigation.
+Save answers to `.tmp/quickening-2-scion-answer.md`. After answering, append any open questions that came up during investigation.
 
 To challenge a settled decision, don't argue it in your answers — append it to open questions with concrete reasoning (new evidence, missed constraint, specific failure case). Vague alternatives don't count; grade will address legit ones.
 

@@ -1,6 +1,6 @@
 # Grade
 
-`.tmp/quickening-2-scion-attempt.md` contains another session's answers to the quiz in `.tmp/quickening-1-elder-quiz.md`. Verify mostly from what you already know — full re-investigation rarely adds value here. Keep responses brief.
+`.tmp/quickening-2-scion-answer.md` contains another session's answers to the quiz in `.tmp/quickening-1-elder-quiz.md`. Verify mostly from what you already know — full re-investigation rarely adds value here. Keep responses brief.
 
 A light spot-check is worth doing when an answer cites a specific file:line that may have shifted since you wrote the quiz (rename, moved function, line drift from intervening edits).
 
