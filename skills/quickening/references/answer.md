@@ -8,5 +8,5 @@ Per question, investigate thoroughly — read several files, targeted greps, dee
 
 Save answers to `.tmp/quickening-2-scion-answer.md`. After answering, append any open questions that came up during investigation.
 
-To challenge a settled decision, don't argue it in your answers — append it to open questions with concrete reasoning (new evidence, missed constraint, specific failure case). Vague alternatives don't count; grade will address legit ones.
+To challenge an undocumented commitment, don't argue it in your answers — append it to open questions with concrete reasoning (new evidence, missed constraint, specific failure case). Vague alternatives don't count; grade will address legit ones.
 
