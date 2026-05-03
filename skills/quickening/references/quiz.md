@@ -12,3 +12,5 @@ Save to `.tmp/quickening-1-elder-quiz.md`:
 - 4-5 questions verifying understanding of the project — pick areas widely (purpose, architecture, conventions, subsystems, abstractions). Avoid clustering around what you touched recently.
 - If work is genuinely mid-flight (incomplete, with hidden intent/next-step context), add 1-2 questions about that.
 - Finally, one adversarial question: "What alternative approach to the current plan might a fresh reader propose, and what trade-off would it make?" — not to re-decide, but to surface blind spots the current session may have missed.
+
+After drafting, review once: is every item for the next session's project understanding, not a log of what you did? Rewrite anything that fails.
