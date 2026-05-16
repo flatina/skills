@@ -15,7 +15,7 @@ Investigation rules:
 
 Write concisely: 1-3 sentences. State the fact only — no background, alternatives, or reasoning unless the question asks. Cite file paths; add line numbers only when the specific location is essential evidence. Depth belongs in the investigation, not the prose — shallow investigation forces rework; verbose prose is just noise.
 
-Save answers to `.tmp/quickening-2-scion-answer.md`. After answering, append any open questions that came up during investigation.
-
-To challenge an undocumented commitment, don't argue it in your answers — append it to open questions with concrete reasoning (new evidence, missed constraint, specific failure case). Vague alternatives don't count; grade will address legit ones.
+Save answers to `.tmp/quickening-2-scion-answer.md`. Then append two independent sections (no challenges does not imply no open questions):
+- **Open questions** — curiosities or gaps that surfaced during investigation (ambiguity, doc/code mismatches, unexplained intent). Populate whenever anything was less than clear.
+- **Challenges** (if any) — concrete objections to an undocumented commitment, with specific reasoning. Optional. Vague alternatives don't count; grade will address legit ones.
 
