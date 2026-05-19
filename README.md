@@ -21,6 +21,7 @@ cowsay "moo"
 
 | Skill | Description |
 |-------|-------------|
+| [code-outline](skills/code-outline) | Compact outline of .ts/.js files — top-level functions, classes, types |
 | [cowsay-ts](skills/cowsay-ts) | ASCII cowsay via TypeScript (bun or node, no deps) |
 | [flcap-win](skills/flcap-win) | Capture a visible Windows window to PNG |
 | [quickening](skills/quickening) | Quiz-based session transfer — alternative to `/compact` and handoff docs. Old session generates verification questions, new session answers by investigating the codebase |
