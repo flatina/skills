@@ -13,4 +13,7 @@ Save to `.tmp/quickening-1-elder-quiz.md`:
 - If work is genuinely mid-flight (incomplete, with hidden intent/next-step context), add 1-2 questions about that.
 - Finally, one adversarial question: "What alternative approach to the current plan might a fresh reader propose, and what trade-off would it make?" — not to re-decide, but to surface blind spots the current session may have missed.
 
-After drafting, review once: is every item for the next session's project understanding, not a log of what you did? Rewrite anything that fails.
+After drafting, review once (review-time gate — do not save these checks in the quiz file):
+- Count the questions: how many target areas you touched this session vs. project areas you didn't touch? Report both. At most 1 should target touched areas; 0 is fine. Rewrite to broaden if more.
+- Did anything brief-but-critical from this session escape capture? Especially: out-of-repo paths (local clones, mounted dirs, fork locations), decisions made verbally with the user, workarounds for issues not in code, external service config not in env files.
+Rewrite anything that fails.
