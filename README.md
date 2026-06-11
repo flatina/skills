@@ -24,4 +24,4 @@ cowsay "moo"
 | [code-outline](skills/code-outline) | Compact outline of .ts/.js files — top-level functions, classes, types |
 | [cowsay-ts](skills/cowsay-ts) | ASCII cowsay via TypeScript (bun or node, no deps) |
 | [flcap-win](skills/flcap-win) | Capture a visible Windows window to PNG |
-| [quickening](skills/quickening) | Quiz-based session transfer — alternative to `/compact` and handoff docs. Old session generates verification questions, new session answers by investigating the codebase |
+| [quickening](skills/quickening) | Hands-free session transfer over [flbus](https://www.npmjs.com/package/@flatina/flbus) — alternative to `/compact` and handoff docs. An elder session quizzes the fresh scion, which answers by investigating the codebase, then grades and reconciles |

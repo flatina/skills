@@ -1,8 +1,10 @@
 # Answer
 
-The quiz was written by a prior session; you are the "next session" it addresses.
+You are the scion — the fresh session the quiz addresses.
 
-Read `.tmp/quickening-1-elder-quiz.md`. Walk the listed references next, then investigate the codebase to answer each question. Don't guess.
+Entry: claim your role (`flbus claim scion`), then arm the watcher as a background task and end the turn — the wake delivers the quiz.
+
+The quiz arrived as your wake message. Walk the references it lists, then investigate the codebase to answer each question. Don't guess.
 
 Mind your context budget — quickening should leave headroom for the work that follows. Every read trades off against later capacity.
 
@@ -15,7 +17,8 @@ Investigation rules:
 
 Write concisely: 1-3 sentences. State the fact only — no background, alternatives, or reasoning unless the question asks. Cite file paths; add line numbers only when the specific location is essential evidence. Depth belongs in the investigation, not the prose — shallow investigation forces rework; verbose prose is just noise.
 
-Save answers to `.tmp/quickening-2-scion-answer.md`. Then append two independent sections (no challenges does not imply no open questions):
+Compose your answers, then append two independent sections (no challenges does not imply no open questions):
 - **Open questions** — curiosities or gaps that surfaced during investigation (ambiguity, doc/code mismatches, unexplained intent). Populate whenever anything was less than clear.
 - **Challenges** (if any) — concrete objections to an undocumented commitment, with specific reasoning. Optional. Vague alternatives don't count; grade will address legit ones.
 
+Then hand off: send your answers to the elder (the quiz's `from`) as the message body (summary `quickening → run grade`), arm the watcher, end the turn.

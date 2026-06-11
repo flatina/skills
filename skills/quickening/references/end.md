@@ -1,7 +1,7 @@
-# End
+# End (scion)
 
-Read `.tmp/quickening-5-elder-reply.md`. Integrate any corrections into your working understanding of the project.
+The reply arrived as your wake message. Integrate its corrections (and the grade's) into your working understanding of the project.
 
-The reply file is a one-shot handoff artifact — not a permanent project doc, don't use it as an ongoing plan. Before cleanup:
-- If any answered open question or caveat has value beyond this session (a non-obvious gotcha, a decision that explains existing code), check with the user on where to persist it — project-level persistence is a decision the user should make, not the session.
-- Then move all `.tmp/quickening-*.md` files into a new timestamped subdir like `.tmp/quickening-YYYYMMDD-HHMMSS/`.
+Wrap up:
+- Same-folder: release the scion identity (`flbus claim --off` — also drops the listen flag) and tear down the scion mailbox (`flbus mailbox rm scion`) — you are the project's session now. Cross-project: `flbus listen --off` instead.
+- In your final message: report the handoff result, and list any answered open question or caveat with value beyond this session (a non-obvious gotcha, a decision that explains existing code) as persistence candidates — where to persist them is the user's call, not the session's.

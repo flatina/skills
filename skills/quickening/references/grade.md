@@ -1,6 +1,6 @@
 # Grade
 
-`.tmp/quickening-2-scion-answer.md` contains another session's answers to the quiz in `.tmp/quickening-1-elder-quiz.md`. Verify mostly from what you already know — full re-investigation rarely adds value here. Keep responses brief.
+The scion's answers arrived as your wake message — answers to the quiz you sent. Verify mostly from what you already know — full re-investigation rarely adds value here. Keep responses brief.
 
 A light spot-check is worth doing when an answer cites a specific file:line that may have shifted since you wrote the quiz (rename, moved function, line drift from intervening edits).
 
@@ -13,4 +13,4 @@ Focus effort where it matters, in order:
 
 Broad/subsystem answers tend to converge on "correct" because they're derived from the same sources you used — they're low-leverage to review. Your attention is better spent on Undocumented commitments and the adversarial question.
 
-Save results to `.tmp/quickening-3-elder-grade.md`.
+Then hand off: send your grade to the scion as the message body (summary `quickening → run probe`), arm the watcher, end the turn.
