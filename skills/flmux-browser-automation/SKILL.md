@@ -1,323 +1,148 @@
 ---
 name: flmux-browser-automation
-description: Drive flmux browser panes with `flmux browser` and `flweb`. Use this skill whenever the task involves browser automation inside flmux — opening web pages, filling forms, clicking buttons, navigating sites, login/auth flows, testing web UI, scraping page content, verifying page state, or any workflow that touches `flweb`, `FLMUX_BROWSER`, browser panes, snapshots, or refs like `@e1`.
+description: Drive flmux browser panes via `flmux browser`. Use this skill whenever the task involves browser automation inside flmux — opening pages, filling forms, clicking, navigating, login flows, scraping page state, verifying UI behavior, or any workflow that touches browser panes, snapshots, refs (`@e1`), or `flmux browser ...` commands.
 allowed-tools:
-  - Bash(flmux summary *)
   - Bash(flmux browser *)
-  - Bash(flweb *)
+  - Bash(flmux get *)
+  - Bash(flmux call *)
+  - Bash(flmux ls *)
 ---
 
 # flmux Browser Automation
 
-## Overview
+Automation lives in `flmux browser <op>` over flmux's path layer. Each op resolves to `path.call /panes/{paneId}/browser/{op}`. The agent's job is to compose `open → snapshot → click/fill/wait` loops.
 
-Use this skill when browser automation should happen inside flmux rather than through a standalone browser tool. The core model is:
-
-1. Create or pick a flmux browser pane
-2. Resolve that pane through `FLMUX_BROWSER` or `--pane`
-3. Use `flweb` for hot-path automation
-4. Re-run `flweb snapshot` after page changes before using refs again
-
-## Core Workflow
-
-Start by discovering the running flmux session:
+## Golden path
 
 ```powershell
-flmux summary --json
+flmux browser open https://example.com --json   # creates pane, returns paneId
+flmux browser snapshot --pane <id>                # accessibility refs @e1, @e2, ...
+flmux browser click @e1 --pane <id>               # click by ref
+flmux browser wait load --pane <id>               # wait after nav
+flmux browser get text "#result" --pane <id>      # read result
 ```
 
-This returns the web server URL, existing panes, and session state. Use `webServerUrl` for internal pages.
+Re-`snapshot` after navigation, reload, or any DOM-significant action. Refs are session-local and ephemeral.
 
-Then create or pick a browser pane:
+## Target forms
+
+`click`, `fill`, `hover`, `focus`, `check`, `uncheck`, `select`, `scroll-to`, `get *`, `is *` accept a `<target>` positional. Forms:
+
+- `@e1` — ref from `snapshot`
+- `#id`, `.class`, `div > a` — CSS selector
+- `text=Sign in` — visible text on a button/link
+- `label=Email` — label text → associated input
+- `role=button[name='Submit']` — ARIA role + name
+- `testid=foo` — `data-testid` attribute
+- `100,200` — viewport coords (CSS px)
+
+Prefer refs after `snapshot`. Use semantic locators (`text=`, `role=`, `label=`) when refs are missing or unstable.
+
+## Pane selection
+
+`--pane <id>` is explicit. Omit → first browser pane found via workspace status. Multiple browser panes → always pass `--pane` to be deterministic. List all browser panes:
 
 ```powershell
-$env:FLMUX_BROWSER = (flmux browser new http://127.0.0.1:3000/about)
-flmux browser connect
-flweb snapshot --compact
+flmux browser list   # paneId, workspaceId, url
 ```
 
-Then interact with the page:
+## Wait variants
+
+| Form | Use |
+|---|---|
+| `wait load` | after a click/nav that triggers full navigation |
+| `wait idle` | after async fetches — waits for resources to settle |
+| `wait "#sel"` | element appears (selector polling) |
+| `wait --text "X"` | body innerText contains string |
+| `wait --url "**/dashboard"` | URL match (glob) — fires on `navigate` + `load-finish` |
+| `wait --fn "expr"` | JS expression becomes truthy |
+
+After form submit that doesn't navigate, use `wait "#result"` or `wait --text "Success"`.
+
+## Common patterns
+
+### Form fill
+```powershell
+flmux browser snapshot
+flmux browser fill @e3 "Jane"
+flmux browser fill @e4 "jane@example.com"
+flmux browser press Enter
+flmux browser wait "#result:not([hidden])"
+flmux browser get text "#result"
+```
+
+### Login + return
+After a click that opens a popup (OAuth/SSO), bunite emits a popup arm and flmux creates a new pane automatically. Find it with `list`, switch via `--pane`. After auth completes (popup may close), return to opener and `snapshot` again.
+
+### Verify navigation
+```powershell
+flmux browser click @e1
+flmux browser wait load
+flmux browser get url
+flmux browser get title
+```
+
+### Inspect state
+```powershell
+flmux browser is visible "#error-banner"   # → true/false
+flmux browser is enabled @e5
+flmux browser console list --level error
+flmux browser screenshot --out /tmp/page.png
+```
+
+## JSON output
+
+`--json` is unnecessary — all `flmux browser` commands print JSON envelopes by default. Parse `value` for results, `error`/`code` for failures.
+
+## Capability gates
+
+Not every backend supports every op. Linux WebKitGTK has no native input; mac WKWebView has no accessibility snapshot, frames, downloads, or popups. Check:
 
 ```powershell
-flweb click @e1
-flweb wait load
-flweb get url
+flmux browser capabilities
 ```
 
-If the task is already running inside a flmux terminal, `FLMUX_APP_IPC` resolves the session automatically. Outside flmux, pass `--session` to `flmux browser ...` and `flweb ...` if needed.
+Operations that hit a missing capability return `{ok:false, code:"NOT_SUPPORTED", ...}` — fall back to `eval` for read-only work.
 
-`FLMUX_BROWSER` is optional when only one browser pane exists or when a browser pane is active — `flweb` auto-targets the active or most recently activated browser pane. Set `FLMUX_BROWSER` explicitly when multiple browser panes exist and you need a specific one.
+## Refs and snapshots
 
-## Target Forms
+Refs (`@e1`, `@e2`) come from `flmux browser snapshot`. They are:
 
-Supported target forms:
+- session-local (cleared on next snapshot, on full page load, on pane close)
+- structurally verified at resolve time (signature mismatch → `stale_ref`)
+- frame-scoped (a ref tied to an iframe stays scoped to that frame)
 
-- ref: `@e1`
-- CSS selector: `#result`
-- text locator: `text=Focus Name`
-- label locator: `label=Email`
-- role locator: `role=button[name='Reveal Result']`
+Always re-snapshot after navigation, reload, form submit, or any agent-triggered DOM change. Stale refs throw `stale_ref` — recover by re-snapshotting, not by retrying the old ref.
 
-Prefer refs after `flweb snapshot`. Use semantic locators when refs are not available yet or when a more stable human-readable selector is clearer.
+For ref lifecycle details: `references/snapshot-refs.md`.
 
-## Pane Management
+## Frames (iframes)
 
-Use `flmux browser ...` only for browser pane management:
+Stripe Elements, embedded checkouts, etc. live in cross-origin iframes. Read DOM from them via:
 
 ```powershell
-flmux browser new https://example.com
-flmux browser list
-flmux browser connect --json
-flmux browser focus             # bring the pane into view (activate its tab)
-flmux browser close
+flmux browser eval --frame <frameId> "document.querySelector('input').value"
+flmux browser snapshot --frame <frameId>          # if supported
 ```
 
-Default command output is concise text. Use `--json` when structured output is helpful.
+`flmux browser list-frames` (when wired) returns frame IDs. Input dispatch (`click`/`type`) inside frames is not yet supported — use the main frame's coord for now.
 
-## Common Patterns
+## Failure recovery
 
-### Create a Fresh Browser Pane
+When `stale_ref`: re-`snapshot`, find the new ref.
 
-```powershell
-$env:FLMUX_BROWSER = (flmux browser new https://example.com)
-flmux browser connect
-flweb snapshot --compact
-```
+When `NOT_SUPPORTED`: check `capabilities`, route around (use `eval` for reads).
 
-Use this when the task should start from a clean page in a fresh browser pane.
+When pane gone: `list` to confirm, recreate via `open` if needed.
 
-### Reuse an Existing Browser Pane
+When `wait` times out: print `get url`, `get title`, `snapshot --compact` to diagnose what state the page is in.
 
-```powershell
-flmux browser list
-$env:FLMUX_BROWSER = "browser.1234abcd"
-flmux browser connect
-flweb get url
-```
-
-Use this when the browser pane already exists and the task should continue from the current page state.
-
-### Form Interaction
-
-```powershell
-flweb snapshot --compact
-flweb fill @e3 "Jane"
-flweb fill @e4 "jane@example.com"
-flweb press Enter
-flweb wait "#result:not([hidden])"
-flweb get text #result
-```
-
-Use refs immediately after a snapshot. If the DOM changes, re-run `snapshot` before using refs again.
-
-### Navigation and Verification
-
-```powershell
-flweb click @e1
-flweb wait load
-flweb get url
-flweb get title
-```
-
-Use this after any click or action that can trigger navigation.
-
-### Login / Auth Popup
-
-Many sites open login in a new tab or popup. The flow is: click login → detect new tab → switch → authenticate → return.
-
-```powershell
-# On the original page
-flweb snapshot --compact
-flweb click --json @e5                    # login button — may open new tab
-# Check JSON output for newPanes
-
-# Switch to the popup tab
-$env:FLMUX_BROWSER = "browser.newPaneId"  # from newPanes[0].paneId
-flweb wait load
-flweb snapshot --compact
-flweb fill @e2 "user@example.com"
-flweb fill @e3 "password"
-flweb click @e4                           # submit
-flweb wait load
-
-# Return to original tab
-$env:FLMUX_BROWSER = "browser.originalId"
-flweb wait idle
-flweb snapshot --compact                  # verify logged-in state
-```
-
-The popup tab may close itself after login completes. If it does, you only need to switch `FLMUX_BROWSER` back and re-snapshot the original page.
-
-## Wait Strategy
-
-Choosing the right `wait` form prevents both premature actions (element not ready) and unnecessary delays (waiting for things that already happened).
-
-| Form | When to use |
-|------|-------------|
-| `wait load` | After click/navigate that triggers a full page navigation (URL changes) |
-| `wait idle` | After actions that trigger async fetches — waits for network to settle |
-| `wait "#selector"` | When you need a specific element to appear before interacting (e.g. `wait "#result:not([hidden])"`) |
-| `wait --text "Success"` | When the signal is visible text, not a DOM element |
-| `wait --url "**/dashboard"` | When a redirect chain must finish before proceeding |
-| `wait --fn "expr"` | Escape hatch — use a JS expression when none of the above fits |
-
-Rules of thumb:
-- After a link click or `navigate`: `wait load`
-- After a form submit that shows results without navigating: `wait idle` or `wait "#result"`
-- After a JS-heavy SPA transition: `wait idle` then `wait` for the expected element
-- If unsure: `wait idle` is the safest default after any action
-
-## flweb Commands
-
-Hot-path commands:
-
-```powershell
-flweb snapshot --compact
-flweb navigate https://example.com/docs
-flweb click @e1
-flweb fill @e3 "hello"
-flweb press Enter
-flweb wait load
-flweb wait idle
-flweb wait "#result:not([hidden])"
-flweb wait --text "Success"
-flweb wait --url "**/dashboard"
-flweb wait --fn "document.readyState === 'complete'"
-flweb get url
-flweb get title
-flweb get text @e1
-flweb get html #result
-flweb get value @e3
-flweb get attr @e4 placeholder
-flweb get box @e3                                       # bounding rect — useful for verifying visibility/position
-flweb eval "document.title"
-flweb back
-flweb forward
-flweb reload
-```
-
-If `FLMUX_BROWSER` is not set, either set it first or pass `--pane <paneId>`.
-
-## JSON Output
-
-Use `--json` when another tool or agent needs structured output.
-
-Examples:
-
-```powershell
-flmux browser connect --json
-flweb snapshot --json
-flweb get box @e3 --json
-flweb eval "document.title" --json
-```
-
-Prefer default terse text when composing quick shell pipelines by hand. Prefer `--json` when the caller will parse the response.
-
-## New Tab Detection
-
-When `click` or `eval` opens a new tab (e.g. `target="_blank"` link), the `--json` output includes a `newPanes` array:
-
-```powershell
-flweb click --json @e1
-# {"ok":true,"paneId":"browser.abc","newPanes":[{"paneId":"browser.def","url":"...","opener":"browser.abc"}]}
-```
-
-To interact with the new tab, switch `FLMUX_BROWSER`:
-
-```powershell
-$result = flweb click --json @e1 | ConvertFrom-Json
-if ($result.newPanes) {
-  $env:FLMUX_BROWSER = $result.newPanes[0].paneId
-  flweb wait load
-  flweb snapshot --compact
-}
-```
-
-`browser list` shows all browser panes with AGE (activation recency) and OPENER (which pane opened it):
-
-```powershell
-flmux browser list
-```
-
-## Snapshots
-
-`--compact` (default for automation) shows interactive elements (links, buttons, inputs) with their refs — enough to decide what to click or fill. Use the full snapshot (no `--compact`) when you need surrounding text content, headings, or non-interactive elements to understand the page structure.
-
-In practice, always start with `--compact`. Switch to full only when `--compact` doesn't show the information you need.
-
-## Refs
-
-Refs like `@e1` come from `flweb snapshot`. They are only valid for the current page state.
-
-Always re-run `snapshot` after:
-
-- navigation
-- reload
-- clicking something that changes the DOM significantly
-- form submission
-- tab/pane switching that may have re-rendered the page
-
-Do not assume old refs survive a page change.
-
-For more detail, read [references/snapshot-refs.md](references/snapshot-refs.md).
-
-## Session and Environment
-
-- `FLMUX_BROWSER` selects the current browser pane for `flweb`
-- `FLMUX_APP_IPC` lets CLI commands talk to the running flmux session
-- inside a flmux terminal, `FLMUX_APP_IPC` is usually already available
-- outside flmux, use `--session` when the session cannot be resolved automatically
-
-For more detail, read [references/session-management.md](references/session-management.md).
-
-## Debugging and Error Recovery
-
-When automation fails, diagnose before retrying.
-
-### Stale ref
-
-A ref like `@e3` no longer exists in the DOM — the page changed since the last snapshot.
-
-```powershell
-flweb snapshot --compact       # get fresh refs
-# find the new ref for the element you need, then retry
-```
-
-### Pane gone or disconnected
-
-The browser pane was closed or the connection dropped.
-
-```powershell
-flmux browser list             # is the pane still alive?
-flmux browser connect --json   # reconnect and check state
-```
-
-If the pane is gone, create a new one and start over.
-
-### Page load failure or timeout
-
-The page didn't finish loading, or a wait timed out.
-
-```powershell
-flweb get url                  # confirm where we are
-flweb get title                # blank title often means error page
-flweb reload                   # retry the load
-flweb wait load
-```
-
-### Wrong page / unexpected state
-
-After an action the page isn't where you expected.
-
-```powershell
-flweb get url
-flweb snapshot --compact       # see what's actually on screen
-```
-
-Read the snapshot output and decide whether to navigate back, retry the action, or adjust the approach. Do not blindly repeat the same action.
+For more: `references/troubleshooting.md`.
 
 ## References
 
-- For a compact command cheat sheet, read [references/commands.md](references/commands.md)
-- For ref lifecycle rules, read [references/snapshot-refs.md](references/snapshot-refs.md)
-- For session/env behavior, read [references/session-management.md](references/session-management.md)
+- `references/commands.md` — full command cheat sheet
+- `references/snapshot-refs.md` — refs lifecycle + signature scoring
+- `references/wait-strategy.md` — picking the right wait variant
+- `references/capability-matrix.md` — backend support table
+- `references/troubleshooting.md` — common failures
