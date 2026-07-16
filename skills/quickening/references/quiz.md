@@ -8,6 +8,7 @@ The quiz contains:
 - Undocumented commitments (if any) — constraints the next session must respect that aren't yet in source or docs. One line each. If it matters long-term, also document it in the project itself. Examples: "user deferred legacy table migration to next sprint", "approach A for now; B prototyped on branch xyz pending review". Don't re-litigate in answers — raise concrete counter-evidence via an open question instead.
 - Operating guidance (if any) follows in the same format: rules about how to work, e.g. style, process, principles. Examples: "terse responses, no trailing summaries", "ask before committing", "implement simple structures concisely — no premature abstraction".
 - Brief context — only what the next session needs.
+- If work is mid-flight, a resume handle — the state it's paused at (what's done vs pending) and the first concrete step to pick it up. Forward-facing: current state + next step, never a log of what you did.
 - References the next session should read — small critical docs in full. For code references, include a "use LSP for navigation" instruction and list path + symbol name. Fall back to line range or section only when no clear symbol exists.
 - 4-5 questions verifying understanding of the project — pick areas widely (purpose, architecture, conventions, subsystems, abstractions). Avoid clustering around what you touched recently.
 - If work is genuinely mid-flight (incomplete, with hidden intent/next-step context), add 1-2 questions about that.
@@ -25,7 +26,7 @@ EOF
 The guard blocks the stop and re-prompts deterministically. On that gate wake, consume the message (`flbus take all` — reads the reframing prompt and clears the inbox), then apply these checks to your in-context draft and revise:
 - Was this written to make a NEW session understand the project, or is it really this session's work log?
 - Count the questions: how many target areas you touched this session vs. project areas you didn't touch? Report both. At most 1 should target touched areas; 0 is fine. Rewrite to broaden if more.
-- Did anything brief-but-critical escape capture? Especially: out-of-repo paths (local clones, mounted dirs, fork locations), decisions made verbally with the user, workarounds for issues not in code, external service config not in env files.
+- Did anything brief-but-critical escape capture? Especially: out-of-repo paths (local clones, mounted dirs, fork locations), decisions made verbally with the user, workarounds for issues not in code, external service config not in env files, and live behavior you observed that no file records but the next session will act on (e.g. a recurring symptom and its cause) — one line each, fact + implication, not how you found it. This is the main blind spot when the work product isn't source the next session can re-read (ops, provisioning, debugging).
 - Cut anything source, docs, or git already answer.
 
 Then hand off: make the scion mailbox (`flbus mailbox add scion`), send the revised quiz to scion as the message body (summary `quickening → run answer`), arm the watcher, end the turn.
