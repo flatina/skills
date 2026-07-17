@@ -11,14 +11,14 @@ Phases: quiz → answer → grade → probe → reply → end. Elder runs quiz, 
 
 Routing:
 - No argument → elder side: read `references/quiz.md` and begin.
-- `scion` → scion side: read `references/answer.md` and begin. Safe to start before the elder finishes — a quiz already sent is delivered instantly when you arm the watcher.
+- `scion` → scion side: read `references/answer.md` and begin.
 
 Requires the `flbus` command on PATH (`npm i -g @flatina/flbus`, needs bun); if it is missing, say so and stop. Treat remaining arguments as custom instructions.
 
 ## Flow
 
 Transport — each phase's output travels as the flbus message body; the summary names the recipient's next phase. Drive flbus through its command (`flbus <cmd>`); never touch flbus storage dirs directly:
-- Same-folder (elder & scion share one folder): each claims its role once (`flbus claim <elder|scion>`), which creates its mailbox. Address the peer `here:<role>` (e.g. `here:scion`); make a peer's mailbox first if it hasn't claimed yet (`flbus mailbox add <role>`).
+- Same-folder (elder & scion share one folder): each claims its role once (`flbus claim <elder|scion>`), which creates its mailbox. Address the peer `here:<role>` (e.g. `here:scion`).
 - Cross-project (the peer is a registered project, /flbus:peer): address it `<peer>:<role>` — its mailbox auto-creates on first send.
 - Reply to a received message's `from`: `here:<from>` same-folder, `<peer>:<from>` cross-project.
 

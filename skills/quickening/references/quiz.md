@@ -29,4 +29,4 @@ The guard blocks the stop and re-prompts deterministically. On that gate wake, c
 - Did anything brief-but-critical escape capture? Especially: out-of-repo paths (local clones, mounted dirs, fork locations), decisions made verbally with the user, workarounds for issues not in code, external service config not in env files, and live behavior you observed that no file records but the next session will act on (e.g. a recurring symptom and its cause) — one line each, fact + implication, not how you found it. This is the main blind spot when the work product isn't source the next session can re-read (ops, provisioning, debugging).
 - Cut anything source, docs, or git already answer.
 
-Then hand off: make the scion mailbox (`flbus mailbox add scion`), send the revised quiz to scion as the message body (summary `quickening → run answer`), arm the watcher, end the turn.
+Then hand off: send the revised quiz to scion as the message body (summary `quickening → run answer`), arm the watcher, end the turn. If the send reports no `scion` mailbox, the scion session hasn't started — ask the user to run `/quickening scion`, then retry.
