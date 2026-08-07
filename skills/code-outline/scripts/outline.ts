@@ -2,9 +2,14 @@
 export {};
 let ts: typeof import("typescript");
 try {
-  ts = await import("typescript");
+  const mod = await import("typescript");
+  ts = ((mod as any).default ?? mod) as typeof import("typescript");
 } catch {
   console.error("Error: 'typescript' package not found. Install or skip outline.");
+  process.exit(1);
+}
+if (!ts.createSourceFile || !(ts as any).ScriptTarget) {
+  console.error("outline needs typescript 5.x (classic compiler API); resolved typescript lacks it — skip, use LSP.");
   process.exit(1);
 }
 
